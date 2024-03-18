@@ -1,6 +1,6 @@
 # Visual Studio 2015 user specific files
 .vs/
-Content/Textures/
+
 # Compiled Object files
 *.slo
 *.lo
