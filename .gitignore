@@ -72,4 +72,5 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
-/Content/FantasyBundle/Textures
+/Content/FantasyBundle/Textures/Texture01
+/Content/FantasyBundle/Textures/Texture02
