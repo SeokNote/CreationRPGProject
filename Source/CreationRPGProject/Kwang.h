@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "BasicCharacter.h"
 #include "Kwang.generated.h"
 
 class USpringArmComponent;
@@ -13,13 +14,15 @@ class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CREATIONRPGPROJECT_API AKwang : public ACharacter
+class CREATIONRPGPROJECT_API AKwang : public ABasicCharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AKwang();
+
+	virtual void PostInitializeComponents() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,8 +47,19 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnyWhere, Category = Input)
+	UInputAction* AttackAction;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	//UAnimMontage* AttackMontage;
+
+	//void Attack();
+
+	//bool IsAttacking();
+	//int ComboAttackIndex = 0;
 
 public:	
 	// Called every frame
@@ -53,6 +67,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	virtual void Jump() override;
+
+public:
+	// Event handler for montage notify begin
+	//UFUNCTION()
+	//void HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload);
+
 
 };

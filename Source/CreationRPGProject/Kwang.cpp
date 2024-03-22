@@ -8,6 +8,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MyWeapon.h"
 
 // Sets default values
 AKwang::AKwang()
@@ -31,6 +32,13 @@ AKwang::AKwang()
 
 }
 
+void AKwang::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	SpawndefaultInventory();
+}
+
+
 // Called when the game starts or when spawned
 void AKwang::BeginPlay()
 {
@@ -43,20 +51,26 @@ void AKwang::BeginPlay()
 			Subsystem->AddMappingContext(DefaultContext, 0);
 		}
 	}
+
+	//UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+	//if (pAnimInst != nullptr)
+	//{
+	//	pAnimInst->OnPlayMontageNotifyBegin.AddDynamic(this, &AKwang::HandleOnMontageNotifyBegin);
+	//}
 }
 
 void AKwang::Move(const FInputActionValue& Value)
 {
-	//if (ActionState != )
-	const FVector2D MovementVector = Value.Get<FVector2D>();
+		//if (ActionState != )
+		const FVector2D MovementVector = Value.Get<FVector2D>();
 
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(RightDirection, MovementVector.X);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AKwang::Look(const FInputActionValue& Value)
@@ -80,16 +94,69 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABasicCharacter::Attack);
+
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AKwang::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AKwang::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AKwang::Jump);
+		//EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AKwang::Attack);
 	}
 
 }
+
+//void AKwang::Attack()
+//{
+//	if (!IsAttacking())
+//	{
+//		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+//		if (pAnimInst != nullptr)
+//		{
+//			if (AttackMontage != nullptr)
+//			{
+//				pAnimInst->Montage_Play(AttackMontage);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		ComboAttackIndex = 1;
+//	}
+//
+//}
+
+//bool AKwang::IsAttacking()
+//{
+//	UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+//	if (pAnimInst != nullptr)
+//	{
+//		if (pAnimInst->Montage_IsPlaying(AttackMontage))
+//		{
+//			return true;
+//		}
+//	}
+//	return false;
+//}
+
 
 void AKwang::Jump()
 {
 	Super::Jump();
 }
+
+//void AKwang::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload)
+//{
+//	// Decrement Combo Index
+//	ComboAttackIndex--;
+//
+//	if (ComboAttackIndex < 0)
+//	{
+//		//Get Anim Instance
+//		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+//		if (pAnimInst != nullptr)
+//		{
+//			pAnimInst->Montage_Stop(0.2f, AttackMontage);
+//		}
+//	}
+//}
