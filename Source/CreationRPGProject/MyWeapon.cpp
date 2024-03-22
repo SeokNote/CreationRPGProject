@@ -45,13 +45,13 @@ void AMyWeapon::OnEquip(const AMyWeapon* LastWeapon)
 	AttachMeshToPawn();
 }
 
-void AMyWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	if (OtherActor->IsA(AActor::StaticClass()))
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, 10.f, NULL, this, UDamageType::StaticClass());
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "ApplayDamage!");
-	}
-}
+//void AMyWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
+//{
+//	if (OtherActor->IsA(AActor::StaticClass()))
+//	{
+//		UGameplayStatics::ApplyDamage(OtherActor, 10.f, NULL, this, UDamageType::StaticClass());
+//		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "ApplayDamage!");
+//	}
+//}
 
 

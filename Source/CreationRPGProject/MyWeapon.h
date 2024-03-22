@@ -31,6 +31,6 @@ protected:
 	class ABasicCharacter* MyPawn;
 
 public:
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor)override;
+	//virtual void NotifyActorBeginOverlap(AActor* OtherActor)override;
 
 };

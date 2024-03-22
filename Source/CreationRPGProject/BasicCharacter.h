@@ -21,10 +21,10 @@ public:
 
 	void EquipWeapon(class AMyWeapon* Weapon);
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category= MyState)
-	float MyHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
-	float MyMaxHealth;
+	//UPROPERTY(EditAnywhere,BlueprintReadOnly, Category= MyState)
+	//float MyHealth;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
+	//float MyMaxHealth;
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,7 +69,7 @@ public:
 	bool Attacking = true;
 	int32 ComboAttack_Num;
 
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)override;
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)override;
 
 	virtual void OnHit(float DamageTaken, struct FDamageEvent const& DamageEvent, class APawn* PawnInstigator, class AActor* DamageCauser);
 

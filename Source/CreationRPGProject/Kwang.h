@@ -50,9 +50,6 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	UInputAction* AttackAction;
 
-	UPROPERTY(BlueprintReadWrite, Category = Input)
-	uint8 IsJump = false;
-
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
@@ -63,6 +60,14 @@ protected:
 
 	bool IsAttacking();
 	int ComboAttackIndex = 0;
+
+	void Running();
+	void StopRunning();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float RunSpeed;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

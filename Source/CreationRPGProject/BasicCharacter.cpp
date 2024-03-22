@@ -15,10 +15,10 @@ ABasicCharacter::ABasicCharacter()
 	Attacking = false;
 	ComboAttack_Num = 0;
 
-	MyHealth = 0.f;
-	MyMaxHealth = 100.f;
+	//MyHealth = 0.f;
+	//MyMaxHealth = 100.f;
 
-	MyHealth = MyMaxHealth;
+	//MyHealth = MyMaxHealth;
 }
 
 //******************
@@ -107,23 +107,23 @@ void ABasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 //{
 //}
 
-float ABasicCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const float MyGetDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-
-	if (MyHealth <= 0)
-	{
-		this->Destroy();
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
-		MyHealth -= MyGetDamage;
-	}
-	PlayAnimMontage(BeHit_AnimMontage, 1.0f);
-
-	return MyGetDamage;
-}
+//float ABasicCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	const float MyGetDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+//
+//	if (MyHealth <= 0)
+//	{
+//		this->Destroy();
+//	}
+//	else
+//	{
+//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
+//		MyHealth -= MyGetDamage;
+//	}
+//	PlayAnimMontage(BeHit_AnimMontage, 1.0f);
+//
+//	return MyGetDamage;
+//}
 
 void ABasicCharacter::Attack()
 {

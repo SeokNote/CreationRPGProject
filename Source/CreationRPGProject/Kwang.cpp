@@ -13,6 +13,8 @@
 
 // Sets default values
 AKwang::AKwang()
+	: WalkSpeed(300.f)
+	, RunSpeed(600.f)
 {
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -99,6 +101,8 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AKwang::Attack);
+	PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AKwang::Running);
+	PlayerInputComponent->BindAction("Running", IE_Released, this, &AKwang::StopRunning);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -143,6 +147,19 @@ bool AKwang::IsAttacking()
 		}
 	}
 	return false;
+}
+
+void AKwang::Running()
+{
+	if (GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.0f)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
+}
+
+void AKwang::StopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 
