@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MyWeapon.h"
 
+
 // Sets default values
 AKwang::AKwang()
 {
@@ -52,16 +53,18 @@ void AKwang::BeginPlay()
 		}
 	}
 
-	//UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
-	//if (pAnimInst != nullptr)
-	//{
-	//	pAnimInst->OnPlayMontageNotifyBegin.AddDynamic(this, &AKwang::HandleOnMontageNotifyBegin);
-	//}
+	UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+	if (pAnimInst != nullptr)
+	{
+		pAnimInst->OnPlayMontageNotifyBegin.AddDynamic(this, &AKwang::HandleOnMontageNotifyBegin);
+	}
 }
 
 void AKwang::Move(const FInputActionValue& Value)
 {
 		//if (ActionState != )
+	if (!IsAttacking())
+	{
 		const FVector2D MovementVector = Value.Get<FVector2D>();
 
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -71,6 +74,7 @@ void AKwang::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+	}
 }
 
 void AKwang::Look(const FInputActionValue& Value)
@@ -82,7 +86,7 @@ void AKwang::Look(const FInputActionValue& Value)
 
 }
 
-// Called every frame
+// Called every frame4
 void AKwang::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -94,7 +98,7 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABasicCharacter::Attack);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AKwang::Attack);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -106,57 +110,60 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-//void AKwang::Attack()
-//{
-//	if (!IsAttacking())
-//	{
-//		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
-//		if (pAnimInst != nullptr)
-//		{
-//			if (AttackMontage != nullptr)
-//			{
-//				pAnimInst->Montage_Play(AttackMontage);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		ComboAttackIndex = 1;
-//	}
-//
-//}
+void AKwang::Attack()
+{
+	bool IsFall = GetMovementComponent()->IsFalling();
 
-//bool AKwang::IsAttacking()
-//{
-//	UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
-//	if (pAnimInst != nullptr)
-//	{
-//		if (pAnimInst->Montage_IsPlaying(AttackMontage))
-//		{
-//			return true;
-//		}
-//	}
-//	return false;
-//}
+	if (!IsAttacking() && !IsFall)
+	{
+		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+		if (pAnimInst != nullptr)
+		{
+			if (AttackMontage != nullptr)
+			{
+				pAnimInst->Montage_Play(AttackMontage);
+			}
+		}
+	}
+	else
+	{
+		ComboAttackIndex = 1;
+	}
+
+}
+
+bool AKwang::IsAttacking()
+{
+	UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+	if (pAnimInst != nullptr)
+	{
+		if (pAnimInst->Montage_IsPlaying(AttackMontage))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 
 void AKwang::Jump()
 {
+	if(!IsAttacking())
 	Super::Jump();
 }
 
-//void AKwang::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload)
-//{
-//	// Decrement Combo Index
-//	ComboAttackIndex--;
-//
-//	if (ComboAttackIndex < 0)
-//	{
-//		//Get Anim Instance
-//		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
-//		if (pAnimInst != nullptr)
-//		{
-//			pAnimInst->Montage_Stop(0.2f, AttackMontage);
-//		}
-//	}
-//}
+void AKwang::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload)
+{
+	// Decrement Combo Index
+	ComboAttackIndex--;
+
+	if (ComboAttackIndex < 0)
+	{
+		//Get Anim Instance
+		UAnimInstance* pAnimInst = GetMesh()->GetAnimInstance();
+		if (pAnimInst != nullptr)
+		{
+			pAnimInst->Montage_Stop(0.1f, AttackMontage);
+		}
+	}
+}

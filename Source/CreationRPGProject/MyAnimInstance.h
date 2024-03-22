@@ -18,6 +18,8 @@ public:
 	UMyAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	bool GetIsInAir() { return IsInAir; }
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;

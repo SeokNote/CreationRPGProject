@@ -50,17 +50,19 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	UInputAction* AttackAction;
 
+	UPROPERTY(BlueprintReadWrite, Category = Input)
+	uint8 IsJump = false;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	//UAnimMontage* AttackMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* AttackMontage;
 
-	//void Attack();
+	void Attack();
 
-	//bool IsAttacking();
-	//int ComboAttackIndex = 0;
-
+	bool IsAttacking();
+	int ComboAttackIndex = 0;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -72,8 +74,9 @@ public:
 
 public:
 	// Event handler for montage notify begin
-	//UFUNCTION()
-	//void HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload);
+	UFUNCTION()
+	void HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingPayload);
+	
 
 
 };
