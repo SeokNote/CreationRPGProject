@@ -27,17 +27,35 @@ public:
 	UFUNCTION()
 	void OnPawnDetected(const TArray<AActor*> &DetectedPawns);
 
-	float AISightRadius = 500.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
+	float AISightRadius = 1500.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
 	float AISightAge = 5.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
 	float AILoseSightRadius = AISightRadius + 50.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
 	float AIFieldOfView = 90.f;
 
-	class UAISenseConfig_Sight* SightConfig;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
+	uint8 bIsPlayerDeteted : 1 = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DAI")
+	float DistanceToPlayer = 0.0f;
+
 private:
-	UPROPERTY(Transient)
-	UBlackboardComponent* BlackboradComp;
+	UPROPERTY(EditInstanceOnly, Category = "DAI", meta = (AllowprivateAcces = "true"))
+	class UBlackboardComponent* BlackboradComp;
 
-	UPROPERTY(Transient)
-	UBehaviorTreeComponent* BehaviorComp;
+	UPROPERTY(EditInstanceOnly, Category = "DAI", meta = (AllowprivateAcces = "true"))
+	class UBehaviorTreeComponent* BehaviorComp;
+	
+	UPROPERTY(EditInstanceOnly, Category = "DAI", meta = (AllowprivateAcces = "true"))
+	class UBehaviorTree* btree;
 
+	UPROPERTY(EditInstanceOnly, Category = "DAI", meta = (AllowprivateAcces = "true"))
+	class UAISenseConfig_Sight* SightConfig;
+
+	void SetUp_Perception();
 };
