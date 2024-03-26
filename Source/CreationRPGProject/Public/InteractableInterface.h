@@ -11,6 +11,7 @@ UINTERFACE(MinimalAPI)
 class UInteractableInterface : public UInterface
 {
 	GENERATED_BODY()
+
 };
 
 /**
@@ -19,6 +20,7 @@ class UInteractableInterface : public UInterface
 class CREATIONRPGPROJECT_API IInteractableInterface
 {
 	GENERATED_BODY()
+
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:

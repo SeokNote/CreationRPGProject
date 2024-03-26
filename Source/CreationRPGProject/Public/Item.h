@@ -8,7 +8,7 @@
 #include "Item.generated.h"
 
 UCLASS()
-class CREATIONRPGPROJECT_API AItem : public AActor , public UInteractableInterface
+class CREATIONRPGPROJECT_API AItem : public AActor , public IInteractableInterface
 
 {
 	GENERATED_BODY()
@@ -26,6 +26,4 @@ protected:
 
 public:
 	virtual void Interact() override;
-
-
 };
