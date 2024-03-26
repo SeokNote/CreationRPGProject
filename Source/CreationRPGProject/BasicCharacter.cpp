@@ -4,6 +4,7 @@
 #include "BasicCharacter.h"
 #include "Engine.h"
 #include "Containers/Array.h"
+#include "Engine/DamageEvents.h" 
 #include "MyWeapon.h"
 
 // Sets default values
@@ -12,13 +13,10 @@ ABasicCharacter::ABasicCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Attacking = false;
-	ComboAttack_Num = 0;
+	MyHealth = 0.f;
+	MyMaxHealth = 100.f;
 
-	//MyHealth = 0.f;
-	//MyMaxHealth = 100.f;
-
-	//MyHealth = MyMaxHealth;
+	MyHealth = MyMaxHealth;
 }
 
 //******************
@@ -106,57 +104,107 @@ void ABasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 //void ABasicCharacter::Attack()
 //{
 //}
+////
+////float ABasicCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+////{
+////	const float MyGetDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+////
+////	if (MyHealth <= 0)
+////	{
+////		this->Destroy();
+////	}
+////	else
+////	{
+////		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
+////		MyHealth -= MyGetDamage;
+////	}
+////	PlayAnimMontage(BeHit_AnimMontage, 1.0f);
+////
+////	return MyGetDamage;
+////}
 
-//float ABasicCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	const float MyGetDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-//
-//	if (MyHealth <= 0)
-//	{
-//		this->Destroy();
-//	}
-//	else
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
-//		MyHealth -= MyGetDamage;
-//	}
-//	PlayAnimMontage(BeHit_AnimMontage, 1.0f);
-//
-//	return MyGetDamage;
-//}
 
-void ABasicCharacter::Attack()
+float ABasicCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (!Attacking)
+	const float MyGetDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (MyHealth <= 0.0f)
 	{
-		if (ComboAttack_Num < 3)
-		{
-			int tmp_Num = rand() % 3 + 1;
-			FString PlaySection = "Attack_" + FString::FromInt(tmp_Num);
-			PlayAnimMontage(Attack_AnimMontage, 1.f, FName(*PlaySection));
-			ComboAttack_Num++;
-
-			Attacking = true;
-
-		}
-		else
-		{
-			PlayAnimMontage(Attack_AnimMontage, 1.f, FName("Attack_4"));
-			ComboAttack_Num = 0;
-		}
+		return 0.0f;
 	}
-}
 
-void ABasicCharacter::Attack_End()
-{
-	Attacking = false;
-}
+	if (MyHealth > 0.f)
+	{
+		MyHealth -= MyGetDamage;
+	}
 
+	if (MyHealth <= 0)
+	{
+		PlayAnimMontage(Death_AnimMontage, 1.0f);
+		Die(MyGetDamage, DamageEvent, EventInstigator, DamageCauser);
+	}
+	else
+	{
+		OnHit(MyGetDamage, DamageEvent, EventInstigator ? EventInstigator->GetPawn() : NULL, DamageCauser);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
+	}
+
+
+	return MyGetDamage;
+}
 
 void ABasicCharacter::OnHit(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
 {
-
+	PlayAnimMontage(BeHit_AnimMontage);
+	if (DamageTaken > 0.f)
+	{
+		ApplyDamageMomentum(DamageTaken, DamageEvent, PawnInstigator, DamageCauser);
+	}
 }
+
+void ABasicCharacter::Die(float KillingDamage, FDamageEvent const& DamageEvent, AController* Killer, AActor* DamageCauser)
+{
+	MyHealth = FMath::Min(0.f, MyHealth);
+
+	UDamageType const* const DamageType = DamageEvent.DamageTypeClass ? Cast<const UDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()) : GetDefault<UDamageType>();
+
+	Killer = GetDamageInstigator(Killer, *DamageType);
+
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->BodyInstance.SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->BodyInstance.SetResponseToChannel(ECC_Pawn, ECR_Ignore);
+		GetCapsuleComponent()->BodyInstance.SetResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	}
+
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		GetCharacterMovement()->DisableMovement();
+	}
+
+	if (Controller != NULL)
+	{
+		Controller->UnPossess();
+	}
+
+	float DeathAnimDuration = PlayAnimMontage(Death_AnimMontage);
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ABasicCharacter::DeathAnimationEnd, DeathAnimDuration, false);
+}
+
+void ABasicCharacter::DeathAnimationEnd()
+{
+	this->SetActorHiddenInGame(true);
+	SetLifeSpan(0.1f);
+}
+
+//void ABasicCharacter::WeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult)
+//{
+//}
 
 
 

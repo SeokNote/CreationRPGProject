@@ -21,6 +21,19 @@ public:
 	void AttachMeshToPawn();
 	void OnEquip(const AMyWeapon* LastWeapon);
 
+	//UFUNCTION()
+	//void WeaponOverlap(
+	//	UPrimitiveComponent* OverlappedComponent,
+	//	AActor* OtherActor,
+	//	UPrimitiveComponent* OtherComp,
+	//	int32 OtherBodyIndex,
+	//	bool bFromSweep,
+	//	const FHitResult& SwwepResult);
+
+	// Activate and deactivate weapon boxes
+	//virtual void ActivateWeapon();
+	//virtual void DeactivateWeapon();
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = Weapon)
 	USkeletalMeshComponent* WeaponMesh;
@@ -31,6 +44,7 @@ protected:
 	class ABasicCharacter* MyPawn;
 
 public:
-	//virtual void NotifyActorBeginOverlap(AActor* OtherActor)override;
+	//virtual void BeginPlay() override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor)override;
 
 };

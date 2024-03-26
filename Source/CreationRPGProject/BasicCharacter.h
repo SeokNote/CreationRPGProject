@@ -21,10 +21,10 @@ public:
 
 	void EquipWeapon(class AMyWeapon* Weapon);
 
-	//UPROPERTY(EditAnywhere,BlueprintReadOnly, Category= MyState)
-	//float MyHealth;
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
-	//float MyMaxHealth;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category= MyState)
+	float MyHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
+	float MyMaxHealth;
 
 protected:
 	// Called when the game starts or when spawned
@@ -55,23 +55,18 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = Pawn)
-	UAnimMontage* Attack_AnimMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = Pawn)
 	UAnimMontage* BeHit_AnimMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Pawn)
 	UAnimMontage* Death_AnimMontage;
 
-	void Attack();
-	void Attack_End();
-
-	bool Attacking = true;
-	int32 ComboAttack_Num;
-
-	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)override;
 
 	virtual void OnHit(float DamageTaken, struct FDamageEvent const& DamageEvent, class APawn* PawnInstigator, class AActor* DamageCauser);
 
+	virtual void Die(float KillingDamage, struct FDamageEvent const& DamageEvent, AController* Killer, AActor* DamageCauser);
 
+	void DeathAnimationEnd();
+
+	bool Attacking;
 };

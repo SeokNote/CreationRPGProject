@@ -19,8 +19,22 @@ AMyWeapon::AMyWeapon(const FObjectInitializer& ObjectInitializer)
 	WeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponCollision"));
 	WeaponCollision->SetBoxExtent(FVector(5.f, 5.f, 5.f));
 	WeaponCollision->SetupAttachment(WeaponMesh, "DamageSocket");
+
 	
 }
+
+//void AMyWeapon::BeginPlay()
+//{
+//	Super::BeginPlay();
+//
+//	// Bind function to overlap event for weapon box
+//	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::WeaponOverlap);
+//	
+//	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//	WeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+//	WeaponCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+//	WeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+//}
 
 void AMyWeapon::SetOwningPawn(ABasicCharacter* NewOwner)
 {
@@ -45,13 +59,29 @@ void AMyWeapon::OnEquip(const AMyWeapon* LastWeapon)
 	AttachMeshToPawn();
 }
 
-//void AMyWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
+//void AMyWeapon::WeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult)
 //{
-//	if (OtherActor->IsA(AActor::StaticClass()))
-//	{
-//		UGameplayStatics::ApplyDamage(OtherActor, 10.f, NULL, this, UDamageType::StaticClass());
-//		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "ApplayDamage!");
-//	}
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "ApplyDamage!");
 //}
+
+//void AMyWeapon::ActivateWeapon()
+//{
+//	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+//}
+//
+//void AMyWeapon::DeactivateWeapon()
+//{
+//	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//}
+
+
+void AMyWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if (OtherActor->IsA(AActor::StaticClass()) && OtherActor !=MyPawn && MyPawn->Attacking)
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, 30.f, NULL, this, UDamageType::StaticClass());
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "ApplyDamage!");
+	}
+}
 
 

@@ -4,23 +4,47 @@
 #include "MyAnimNotifyState.h"
 #include "Engine.h"
 #include "BasicCharacter.h"
+//#include "MyWeapon.h"
 
 void UMyAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, __FUNCTION__);
-
-}
-void UMyAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, __FUNCTION__);
-
 	if (MeshComp != NULL && MeshComp->GetOwner() != NULL)
 	{
 		ABasicCharacter* Player = Cast<ABasicCharacter>(MeshComp->GetOwner());
 		if (Player != NULL)
 		{
-			Player->Attack_End();
-			//Player->isDuringAttack = false;
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, __FUNCTION__);
+			Player->Attacking = true;
 		}
 	}
+	//if (MeshComp && MeshComp->GetOwner())
+	//{
+	//	AMyWeapon* Weapon = Cast<AMyWeapon>(MeshComp->GetOwner());
+	//	if (Weapon != NULL)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, __FUNCTION__);
+	//		Weapon->ActivateWeapon();
+	//	}
+	//}
+}
+void UMyAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+{
+	if (MeshComp != NULL && MeshComp->GetOwner() != NULL)
+	{
+		ABasicCharacter* Player = Cast<ABasicCharacter>(MeshComp->GetOwner());
+		if (Player != NULL)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, __FUNCTION__);
+			Player->Attacking = false;
+		}
+	}
+	////if (MeshComp && MeshComp->GetOwner())
+	////{
+	////	AMyWeapon* Weapon = Cast<AMyWeapon>(MeshComp->GetOwner());
+	////	if (Weapon != NULL)
+	////	{
+	////		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, __FUNCTION__);
+	////		Weapon->DeactivateWeapon();
+	////	}
+	////}
 }

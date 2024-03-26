@@ -58,7 +58,6 @@ protected:
 
 	void Attack();
 
-	bool IsAttacking();
 	int ComboAttackIndex = 0;
 
 	void Running();
@@ -76,6 +75,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void Jump() override;
+
+	bool IsAttacking();
 
 public:
 	// Event handler for montage notify begin

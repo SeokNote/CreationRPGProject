@@ -3,7 +3,7 @@
 #include "MyAnimInstance.h"
 #include "Kwang.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 UMyAnimInstance::UMyAnimInstance()
 {
@@ -25,6 +25,11 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (Character)
 		{
 			IsInAir = Character->GetMovementComponent()->IsFalling();
+
+			FRotator const AimRotation = Character->GetBaseAimRotation();
+			FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(Character->GetVelocity());
+
+			MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 		}
 	}
 }
