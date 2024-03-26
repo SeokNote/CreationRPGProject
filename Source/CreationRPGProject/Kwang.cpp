@@ -75,10 +75,9 @@ void AKwang::Interact()
 	Params.AddIgnoredActor(this);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
 	{
-		AActor* Actor = HitResult.GetActor();
-		if(Actor)
+		if (AActor* Actor = HitResult.GetActor())
 		{
-			UE_LOG(LogTemp, Log, TEXT("Hit Actor: %s"), *Actor->GetOwner()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *Actor->GetName());
 		}
 	}
 }
