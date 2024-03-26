@@ -65,6 +65,24 @@ void AKwang::BeginPlay()
 	}
 }
 
+void AKwang::Interact()
+{
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector End = Start + FollowCamera->GetForwardVector() * 500.f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+	{
+		AActor* Actor = HitResult.GetActor();
+		if(Actor)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Hit Actor: %s"), *Actor->GetOwner()->GetName());
+		}
+	}
+}
+
 void AKwang::Move(const FInputActionValue& Value)
 {
 		//if (ActionState != )
@@ -106,6 +124,7 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AKwang::Attack);
 	PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AKwang::Running);
 	PlayerInputComponent->BindAction("Running", IE_Released, this, &AKwang::StopRunning);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AKwang::Interact);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
