@@ -6,6 +6,51 @@
 #include "UObject/Interface.h"
 #include "InteractableInterface.generated.h"
 
+class AKwang;
+
+UENUM()
+enum class EInteratableType : uint8
+{
+	PickUp UMETA(DisplayName = "PickUp"),
+	NonPlayerCharacter UMETA(DisplayName = "NonPlayerCharacter"),
+	Device UMETA(DisplayName = "Device"),
+	Toggle UMETA(DisplayName = "Toggle"),
+	Container UMETA(DisplayName = "Container")
+};
+
+USTRUCT()
+struct FInteractableData
+{
+	GENERATED_USTRUCT_BODY()
+
+	FInteractableData() : 
+	InteractableType(EInteratableType::PickUp),
+	Name(FText::GetEmpty()),
+	Action(FText::GetEmpty()),
+	Quantity(0),
+	InteractionDuration(0.0f)
+	{
+
+	};
+
+	UPROPERTY(EditInstanceOnly)
+	EInteratableType InteractableType;
+
+	UPROPERTY(EditInstanceOnly)
+	FText Name;
+
+	UPROPERTY(EditInstanceOnly)
+	FText Action;
+
+	// used only for pickups
+	UPROPERTY(EditInstanceOnly)
+	int8 Quantity;
+
+	// used for things like valves, etc. that require an interaction timer
+	UPROPERTY(EditInstanceOnly)
+	float InteractionDuration;
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UInteractableInterface : public UInterface
@@ -21,8 +66,13 @@ class CREATIONRPGPROJECT_API IInteractableInterface
 {
 	GENERATED_BODY()
 
-
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Interact() = 0;
+	virtual void BeginFocus();
+	virtual void EndFocus();
+	virtual void BeginInteract();
+	virtual void EndInteract();
+	virtual void Interact(AKwang* PlayerCharacter);
+
+	FInteractableData InteratableData;
 };

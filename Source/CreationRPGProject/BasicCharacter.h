@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "CreationRPGProject/Public/World/Weapon.h"
 #include "BasicCharacter.generated.h"
 
+class UItemBase;
 UCLASS()
 class CREATIONRPGPROJECT_API ABasicCharacter : public ACharacter
 {
@@ -15,11 +17,28 @@ public:
 	// Sets default values for this character's properties
 	ABasicCharacter();
 
-	USkeletalMeshComponent* GetSpecificPawnMesh() const;
+	//USkeletalMeshComponent* GetSpecificPawnMesh() const;
 
-	FName GetWeaponAttachPoint()const;
+	//FName GetWeaponAttachPoint()const;
 
-	void EquipWeapon(class AMyWeapon* Weapon);
+	//void EquipWeapon(class AMyWeapon* Weapon);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	AWeapon* CurrentWeapon;
+
+	UItemBase* CurrentWeaponItemBase;
+
+	void SetCurrentWeaponItemBase(UItemBase* CIB) { CurrentWeaponItemBase = CIB; };
+	UItemBase* GetCurrentWeaponItemBase() { return CurrentWeaponItemBase; };
+
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void EquipWeapon(AWeapon* NewWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	AWeapon* GetEquippedWeapon() const;
+
+	void RestoreHP(float hp);
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category= MyState)
 	float MyHealth;
@@ -30,22 +49,23 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	FName WeaponAttachPoint;
+	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	//FName WeaponAttachPoint;
 
 
-	TArray<class AMyWeapon*>Inventory;
 
-	class AMyWeapon* CurrentWeapon;
+	//TArray<class AMyWeapon*>Inventory;
 
-	void AddWeapon(class AMyWeapon* Weapon);
+	//class AMyWeapon* CurrentWeapon;
 
-	void SetCurrentWeapon(class AMyWeapon* NewWeapon, class AMyWeapon* LastWeapon);
+	//void AddWeapon(class AMyWeapon* Weapon);
 
-	void SpawndefaultInventory();
+	//void SetCurrentWeapon(class AMyWeapon* NewWeapon, class AMyWeapon* LastWeapon);
 
-	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	TArray<TSubclassOf<class AMyWeapon>>DefaultInventoryClasses;
+	//void SpawndefaultInventory();
+
+	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	//TArray<TSubclassOf<class AMyWeapon>>DefaultInventoryClasses;
 
 public:	
 	// Called every frame

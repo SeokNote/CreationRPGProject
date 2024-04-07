@@ -9,6 +9,11 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MyWeapon.h"
+#include "DrawDebugHelpers.h"
+#include "CreationRPGProject/Public/Components/InventoryComponent.h"
+#include "MyHUD.h"
+#include "CreationRPGProject/Public/World/Pickup.h"
+#include "CreationRPGProject/Public/ItemBase.h"
 
 
 // Sets default values
@@ -33,6 +38,14 @@ AKwang::AKwang()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 
+	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventory->SetSlotsCapacity(20);
+	PlayerInventory->SetWeightCapacity(50.f);
+
+	InteractionCheckFrequency = 0.1f;
+	InteractionCheckDistance = 225.f;
+	BaseEyeHeight = 74.f;
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -41,15 +54,16 @@ AKwang::AKwang()
 void AKwang::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	SpawndefaultInventory();
+	//SpawndefaultInventory();
 }
-
 
 // Called when the game starts or when spawned
 void AKwang::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	HUD = Cast<AMyHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -65,22 +79,188 @@ void AKwang::BeginPlay()
 	}
 }
 
-void AKwang::Interact()
+// Called every frame4
+void AKwang::Tick(float DeltaTime)
 {
-	FVector Start = FollowCamera->GetComponentLocation();
-	FVector End = Start + FollowCamera->GetForwardVector() * 500.f;
+	Super::Tick(DeltaTime);
 
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
 	{
-		if (AActor* Actor = HitResult.GetActor())
+		PerformInteractionCheck();
+	}
+}
+
+
+void AKwang::PerformInteractionCheck()
+{
+	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+
+	FVector TraceStart{ GetPawnViewLocation() };
+	FVector TraceEnd{ TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance) };
+
+	float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+
+	if (LookDirection > 0)
+	{
+		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		FHitResult TraceHit;
+
+		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *Actor->GetName());
+			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
+			{
+
+				if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
+				{
+					FoundInteractable(TraceHit.GetActor());
+					return;
+				}
+
+				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+				{
+					return;
+				}
+			}
+		}
+	}
+	NoInteractableFound();
+}
+
+void AKwang::FoundInteractable(AActor* NewInteractable)
+{
+	if (IsInteracting())
+	{
+		EndInteract();
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		TargetInteractable = InteractionData.CurrentInteractable;
+		TargetInteractable->EndFocus();
+	}
+
+	InteractionData.CurrentInteractable = NewInteractable;
+	TargetInteractable = NewInteractable;
+
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteratableData);
+
+
+	TargetInteractable->BeginFocus();
+
+}
+
+void AKwang::NoInteractableFound()
+{
+	if (IsInteracting())
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->EndFocus();
+		}
+	}
+
+	// hide interaction widget on the HUD
+	HUD->HideInteractionWidget();
+
+
+	InteractionData.CurrentInteractable = nullptr;
+	TargetInteractable = nullptr;
+}
+
+void AKwang::BeginInteract()
+{
+	// verify nothing has changed with the interactable state since beginning interaction
+	PerformInteractionCheck();
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->BeginInteract();
+
+			if (FMath::IsNearlyZero(TargetInteractable->InteratableData.InteractionDuration, 0.1f))
+			{
+				Interact();
+			}
+			else
+			{
+				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
+					this,
+					&AKwang::Interact,
+					TargetInteractable->InteratableData.InteractionDuration,
+					false);
+			}
 		}
 	}
 }
+
+void AKwang::EndInteract()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->EndInteract();
+	}
+}
+
+void AKwang::Interact()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->Interact(this);
+	}
+}
+
+void AKwang::UpdateInteractionWidget() const
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteratableData);
+	}
+}
+
+void AKwang::ToggleMenu()
+{
+	HUD->ToggleMenu();
+}
+
+void AKwang::DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop)
+{
+	if (PlayerInventory->FindMatchingItem(ItemToDrop))
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.bNoFail = true;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		const FVector SpawnLocation{ GetActorLocation() + (GetActorForwardVector() * 50.0f)};
+
+		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+
+		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
+
+		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParams);
+
+		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Item to drop was somehow null"));
+	}
+}
+
+
 
 void AKwang::Move(const FInputActionValue& Value)
 {
@@ -108,12 +288,6 @@ void AKwang::Look(const FInputActionValue& Value)
 
 }
 
-// Called every frame4
-void AKwang::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 // Called to bind functionality to input
 void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -123,7 +297,9 @@ void AKwang::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AKwang::Attack);
 	PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AKwang::Running);
 	PlayerInputComponent->BindAction("Running", IE_Released, this, &AKwang::StopRunning);
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AKwang::Interact);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AKwang::BeginInteract);
+	PlayerInputComponent->BindAction("Interact", IE_Released, this, &AKwang::EndInteract);
+	PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &AKwang::ToggleMenu);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{

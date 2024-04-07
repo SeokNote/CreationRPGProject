@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "Containers/Array.h"
 #include "Engine/DamageEvents.h" 
-#include "MyWeapon.h"
+//#include "MyWeapon.h"
 
 // Sets default values
 ABasicCharacter::ABasicCharacter()
@@ -13,71 +13,94 @@ ABasicCharacter::ABasicCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	MyHealth = 0.f;
-	MyMaxHealth = 100.f;
+	MyHealth = 100.f;
+	MyMaxHealth = 500.f;
 
-	MyHealth = MyMaxHealth;
+	//MyHealth = MyMaxHealth;
 }
 
 //******************
 //***********Weapon******************
-USkeletalMeshComponent* ABasicCharacter::GetSpecificPawnMesh() const
-{
-	return GetMesh();
-}
+////USkeletalMeshComponent* ABasicCharacter::GetSpecificPawnMesh() const
+////{
+////	return GetMesh();
+////}
+////
+////FName ABasicCharacter::GetWeaponAttachPoint() const
+////{
+////	return WeaponAttachPoint;
+////}
+////
+////void ABasicCharacter::EquipWeapon(AMyWeapon* Weapon)
+////{
+////	if (Weapon)
+////	{
+////		SetCurrentWeapon(Weapon, CurrentWeapon);
+////	}
+////}
 
-FName ABasicCharacter::GetWeaponAttachPoint() const
+void ABasicCharacter::EquipWeapon(AWeapon* NewWeapon)
 {
-	return WeaponAttachPoint;
-}
-
-void ABasicCharacter::EquipWeapon(AMyWeapon* Weapon)
-{
-	if (Weapon)
+	if (CurrentWeapon)
 	{
-		SetCurrentWeapon(Weapon, CurrentWeapon);
-	}
-}
-
-void ABasicCharacter::AddWeapon(AMyWeapon* Weapon)
-{
-	if (Weapon)
-	{
-		Inventory.AddUnique(Weapon);
-	}
-}
-
-void ABasicCharacter::SetCurrentWeapon(AMyWeapon* NewWeapon, AMyWeapon* LastWeapon)
-{
-	AMyWeapon* LocalLastWeapon = NULL;
-	if (LastWeapon != NULL)
-	{
-		LocalLastWeapon = LastWeapon;
+		CurrentWeapon->OnUnequip();
+		CurrentWeapon->Destroy();
 	}
 
-	if (NewWeapon)
-	{
-		NewWeapon->SetOwningPawn(this);
-		NewWeapon->OnEquip(LastWeapon);
-	}
+	CurrentWeapon = NewWeapon;
+	CurrentWeapon->OnEquip();
 }
-void ABasicCharacter::SpawndefaultInventory()
+
+AWeapon* ABasicCharacter::GetEquippedWeapon() const
 {
-	int32 NumWeaponClasses = DefaultInventoryClasses.Num();
-
-	if (DefaultInventoryClasses.Num() > 0)
-	{
-		FActorSpawnParameters SpawnInfo;
-		UWorld* WRLD = GetWorld();
-		AMyWeapon* NewWeapon = WRLD->SpawnActor<AMyWeapon>(DefaultInventoryClasses[0], SpawnInfo);
-		AddWeapon(NewWeapon);
-	}
-
-	if (Inventory.Num() > 0)
-	{
-		EquipWeapon(Inventory[0]);
-	}
+	return CurrentWeapon;
 }
+
+void ABasicCharacter::RestoreHP(float hp)
+{
+	MyHealth += hp;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HP is : %f"), MyHealth));
+}
+
+//void ABasicCharacter::AddWeapon(AMyWeapon* Weapon)
+//{
+//	if (Weapon)
+//	{
+//		Inventory.AddUnique(Weapon);
+//	}
+//}
+//
+//void ABasicCharacter::SetCurrentWeapon(AMyWeapon* NewWeapon, AMyWeapon* LastWeapon)
+//{
+//	AMyWeapon* LocalLastWeapon = NULL;
+//	if (LastWeapon != NULL)
+//	{
+//		LocalLastWeapon = LastWeapon;
+//	}
+//
+//	if (NewWeapon)
+//	{
+//		NewWeapon->SetOwningPawn(this);
+//		NewWeapon->OnEquip(LastWeapon);
+//	}
+//}
+//void ABasicCharacter::SpawndefaultInventory()
+//{
+//	int32 NumWeaponClasses = DefaultInventoryClasses.Num();
+//
+//	if (DefaultInventoryClasses.Num() > 0)
+//	{
+//		FActorSpawnParameters SpawnInfo;
+//		UWorld* WRLD = GetWorld();
+//		AMyWeapon* NewWeapon = WRLD->SpawnActor<AMyWeapon>(DefaultInventoryClasses[0], SpawnInfo);
+//		AddWeapon(NewWeapon);
+//	}
+//
+//	if (Inventory.Num() > 0)
+//	{
+//		EquipWeapon(Inventory[0]);
+//	}
+//}
 //****************************
 
 // Called when the game starts or when spawned
