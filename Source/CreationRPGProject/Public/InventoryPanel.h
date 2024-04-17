@@ -33,6 +33,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* CapacityInfo;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* GoldInfo;
+
 	UPROPERTY()
 	AKwang* PlayerCharacter;
 

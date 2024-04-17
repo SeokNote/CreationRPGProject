@@ -9,6 +9,7 @@
 struct FInteractableData;
 class UInteractionWidget;
 class UMainMenu;
+class UShopMainMenu;
 
 UCLASS()
 class CREATIONRPGPROJECT_API AMyHUD : public AHUD
@@ -18,6 +19,9 @@ class CREATIONRPGPROJECT_API AMyHUD : public AHUD
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UMainMenu> MainMenuClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UShopMainMenu> ShopMainMenuClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UInteractionWidget> InteractionWidgetClass;
@@ -30,6 +34,9 @@ public:
 	void HideMenu();
 	void ToggleMenu();
 
+	void OpenShop();
+	void CloseShop();
+
 	void ShowInteractionWidget() const;
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const FInteractableData* InteractableData) const;
@@ -37,6 +44,9 @@ public:
 protected:
 	UPROPERTY()
 	UMainMenu* MainMenuWidget;
+
+	UPROPERTY()
+	UShopMainMenu* ShopMainMenuWidget;
 
 	UPROPERTY()
 	UInteractionWidget* InteractionWidget;

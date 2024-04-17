@@ -45,6 +45,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
 	float MyMaxHealth;
 
+	int Gold;
+
+	void AddGold(int gold) { Gold += gold; };
+	void RemoveGold(int gold) { Gold -= gold; };
+	int GetGold() { return Gold; };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -89,4 +95,11 @@ public:
 	void DeathAnimationEnd();
 
 	bool Attacking;
+
+
+private:
+	class UAIPerceptionStimuliSourceComponent* StimulusSource;
+
+	void SetupStimulusSource();
+
 };

@@ -40,7 +40,7 @@ AKwang::AKwang()
 
 	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
 	PlayerInventory->SetSlotsCapacity(20);
-	PlayerInventory->SetWeightCapacity(50.f);
+	PlayerInventory->SetWeightCapacity(3000.f);
 
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 225.f;
@@ -233,6 +233,16 @@ void AKwang::UpdateInteractionWidget() const
 void AKwang::ToggleMenu()
 {
 	HUD->ToggleMenu();
+}
+
+void AKwang::ShopOpen()
+{
+	HUD->OpenShop();
+}
+
+void AKwang::ShopClose()
+{
+	HUD->CloseShop();
 }
 
 void AKwang::DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop)

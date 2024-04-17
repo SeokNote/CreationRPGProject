@@ -5,6 +5,8 @@
 #include "Engine.h"
 #include "Containers/Array.h"
 #include "Engine/DamageEvents.h" 
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 //#include "MyWeapon.h"
 
 // Sets default values
@@ -15,6 +17,10 @@ ABasicCharacter::ABasicCharacter()
 
 	MyHealth = 100.f;
 	MyMaxHealth = 500.f;
+
+	Gold = 1000;
+
+	SetupStimulusSource();
 
 	//MyHealth = MyMaxHealth;
 }
@@ -223,6 +229,16 @@ void ABasicCharacter::DeathAnimationEnd()
 {
 	this->SetActorHiddenInGame(true);
 	SetLifeSpan(0.1f);
+}
+
+void ABasicCharacter::SetupStimulusSource()
+{
+	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
+	if (StimulusSource)
+	{
+		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimulusSource->RegisterWithPerceptionSystem();
+	}
 }
 
 //void ABasicCharacter::WeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult)

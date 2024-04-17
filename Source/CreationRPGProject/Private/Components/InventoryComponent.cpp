@@ -226,7 +226,11 @@ int32 UInventoryComponent::HandleStackableItems(UItemBase* ItemIn, int32 Request
 
 FItemAddResult UInventoryComponent::HandleAddItem(UItemBase* InputItem)
 {
-	if (GetOwner())
+	if (!GetOwner())
+	{
+		UE_LOG(LogTemp, Error, TEXT("InventoryComponent owner is null in %s."), *GetName());
+	}
+	else //(GetOwner())
 	{
 		const int32 InitialRequestedAddAmount = InputItem->Quantity;
 

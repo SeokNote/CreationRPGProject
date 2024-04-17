@@ -35,6 +35,7 @@ class UItemBase;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
+class UShopInventoryPanel;
 class UInputAction;
 
 UCLASS()
@@ -55,6 +56,9 @@ public:
 	void UpdateInteractionWidget() const;
 
 	void DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop);
+
+	void ShopOpen();
+	void ShopClose();
 
 
 protected:
@@ -127,6 +131,8 @@ protected:
 	float WalkSpeed;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float RunSpeed;
+
+	UShopInventoryPanel* ShopInventoryPanel;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -137,6 +143,9 @@ public:
 	virtual void Jump() override;
 
 	bool IsAttacking();
+
+	UShopInventoryPanel* GetShopInventoryPanel() { return ShopInventoryPanel; };
+	void SetShopInventoryPanel(UShopInventoryPanel* SIP) { ShopInventoryPanel = SIP; };
 
 public:
 	// Event handler for montage notify begin

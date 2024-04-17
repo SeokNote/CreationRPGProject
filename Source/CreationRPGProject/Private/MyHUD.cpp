@@ -2,6 +2,7 @@
 
 #include "MyHUD.h"
 #include "MainMenu.h"
+#include "CreationRPGProject/Public/Shop/ShopMainMenu.h"
 #include "InteractionWidget.h"
 
 AMyHUD::AMyHUD()
@@ -17,6 +18,13 @@ void AMyHUD::BeginPlay()
 		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
 		MainMenuWidget->AddToViewport(5);
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (ShopMainMenuClass)
+	{
+		ShopMainMenuWidget = CreateWidget<UShopMainMenu>(GetWorld(), ShopMainMenuClass);
+		ShopMainMenuWidget->AddToViewport(5);
+		ShopMainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (InteractionWidgetClass)
@@ -47,6 +55,8 @@ void AMyHUD::HideMenu()
 	}
 }
 
+
+
 void AMyHUD::ToggleMenu()
 {
 	if (bIsMenuVisible)
@@ -63,6 +73,30 @@ void AMyHUD::ToggleMenu()
 		const FInputModeGameAndUI InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+}
+
+void AMyHUD::OpenShop()
+{
+	if (ShopMainMenuWidget)
+	{
+		ShopMainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+
+		const FInputModeGameAndUI InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+}
+
+void AMyHUD::CloseShop()
+{
+	if (ShopMainMenuWidget)
+	{
+		ShopMainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+		const FInputModeGameOnly InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(false);
 	}
 }
 

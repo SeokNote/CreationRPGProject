@@ -113,6 +113,9 @@ protected:
 	int32 InventorySlotsCapacity;
 	UPROPERTY(EditInstanceOnly, Category = "Inventory")
 	float InventoryWeightCapacity;
+	//UPROPERTY(EditInstanceOnly, Category = "Inventory")
+	//int32 Gold;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TArray<TObjectPtr<UItemBase>> InventoryContents;

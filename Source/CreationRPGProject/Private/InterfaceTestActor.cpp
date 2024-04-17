@@ -2,6 +2,8 @@
 
 
 #include "InterfaceTestActor.h"
+#include "CreationRPGProject/Public/Shop/ShopInventoryPanel.h"
+#include "CreationRPGProject/Public/Shop/ShopInventorySlot.h"
 
 // Sets default values
 AInterfaceTestActor::AInterfaceTestActor()
@@ -13,6 +15,8 @@ AInterfaceTestActor::AInterfaceTestActor()
 
 	SetRootComponent(Mesh);
 
+	//static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTable(TEXT("DataTable'/Game/ItemData.ShopDataTable'"));
+	//ItemDataTableObject = ItemDataTable.Object;
 
 }
 
@@ -24,11 +28,40 @@ void AInterfaceTestActor::BeginPlay()
 	InteratableData = InstanceInteractableData;
 }
 
-// Called every frame
-void AInterfaceTestActor::Tick(float DeltaTime)
+void AInterfaceTestActor::LoadItemData()
 {
-	Super::Tick(DeltaTime);
+	//if (!ItemDataTableObject) return;
 
+	if (!ItemDataTable) return;
+
+	// Array to hold the struct data
+	TArray<FItemData*> OutItemData;
+	ItemDataTable->GetAllRows<FItemData>(TEXT(""), OutItemData);
+
+	for (const FItemData* ItemData : OutItemData)
+	{
+		// Here you can create item instances based on the loaded data
+		// For example, log the item name
+		UE_LOG(LogTemp, Warning, TEXT("Loaded Item: %s"), *ItemData->TextData.Name.ToString());
+	}
+}
+
+UItemBase* AInterfaceTestActor::CreateItemInstance(const FItemData& ItemData)
+{
+	UItemBase* NewItem = NewObject<UItemBase>(this, UItemBase::StaticClass());
+	if (!NewItem) return nullptr;
+
+	// Set item properties from the data
+	NewItem->ID = ItemData.ID;
+	NewItem->ItemType = ItemData.ItemType;
+	NewItem->ItemQuality = ItemData.ItemQuality;
+	NewItem->ItemStatistics = ItemData.ItemStatistics;
+	NewItem->TextData = ItemData.TextData;
+	NewItem->NumericData = ItemData.NumericData;
+	NewItem->AssetData = ItemData.AssetData;
+	NewItem->Quantity = 1; // Default quantity
+
+	return NewItem;
 }
 
 void AInterfaceTestActor::BeginFocus()
@@ -59,6 +92,22 @@ void AInterfaceTestActor::EndInteract()
 
 void AInterfaceTestActor::Interact(AKwang* PlayerCharacter)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Calling Interact override on interface test actor."));
+	if (ItemDataTable)
+	{
+		TArray<FItemData*> OutItemData;
+		ItemDataTable->GetAllRows<FItemData>(TEXT(""), OutItemData);
+
+		for (const FItemData* ItemData : OutItemData)
+		{
+			UItemBase* ShopItem = CreateItemInstance(*ItemData);
+			InventoryContents.Add(ShopItem);
+		}
+	}
+
+	PlayerCharacter->ShopOpen();
+	ShopInventoryPanel = PlayerCharacter->GetShopInventoryPanel();
+	ShopInventoryPanel->RefreshInventory(InventoryContents);
+	InventoryContents.Empty();
+
 }
 

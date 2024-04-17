@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "World/Pickup.h"
+#include "CreationRPGProject/Public/World/Pickup.h"
 #include "CreationRPGProject/Public/Components/InventoryComponent.h"
 #include "CreationRPGProject/Public/ItemBase.h"
 

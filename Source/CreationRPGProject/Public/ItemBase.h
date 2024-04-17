@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Structs.h"
+#include "CreationRPGProject/Public/Structs.h"
 #include "CreationRPGProject/Kwang.h"
 #include "ItemBase.generated.h"
 
@@ -80,6 +80,8 @@ public:
 	UFUNCTION(Category = "Item")
 	virtual void Use(UItemBase* ItemIn, AKwang* Character);
 
+	UFUNCTION(Category = "ShopItem")
+	virtual void Shop(UItemBase* ItemIn, AKwang* Character);
 
 protected:
 	bool operator == (const FName& OtherID) const

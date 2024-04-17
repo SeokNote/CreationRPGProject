@@ -58,6 +58,7 @@ void UItemBase::Use(UItemBase* ItemIn,AKwang* Character)
 	if (ItemIn->ID == FName(TEXT("test_001"))) // 포션(ID = 임시)
 	{
 		Character->RestoreHP(50);
+		Character->AddGold(100);
 		OwningInventory->RemoveAmountOfItem(ItemIn, 1);
 
 		//ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
@@ -81,3 +82,17 @@ void UItemBase::Use(UItemBase* ItemIn,AKwang* Character)
 		}
 	}
 }
+
+void UItemBase::Shop(UItemBase* ItemIn, AKwang* Character)
+{
+	OwningInventory = Character->GetInventory();
+
+	if (OwningInventory)
+	{
+		Character->RemoveGold(ItemIn->ItemStatistics.SellValue);
+		const FItemAddResult AddResult = OwningInventory->HandleAddItem(ItemIn);
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Hello."));
+}
+

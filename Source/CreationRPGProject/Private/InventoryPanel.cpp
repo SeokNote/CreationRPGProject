@@ -33,6 +33,8 @@ void UInventoryPanel::SetInfoText() const
 	CapacityInfo->SetText(FText::Format(FText::FromString("{0}/{1}"),
 		InventoryReference->GetInventoryContents().Num(),
 		InventoryReference->GetSlotsCapacity()));
+	GoldInfo->SetText(FText::Format(FText::FromString("Gold : {0}"),
+		PlayerCharacter->GetGold()));
 }
 
 void UInventoryPanel::RefreshInventory()

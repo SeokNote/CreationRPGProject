@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CreationRPGProject/public/InteractableInterface.h"
+#include "Components/BoxComponent.h"
 #include "Weapon.generated.h"
 
 class UDataTable;
@@ -26,6 +27,10 @@ public:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+    UFUNCTION()
+    void OnWeaponOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
 
@@ -40,6 +45,9 @@ public:
     void OnUnequip();
 
     void InitializeForCharacter(AKwang* InPlayerCharacter);
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UBoxComponent* WeaponCollider;
 
 private:
     AKwang* PlayerCharacter;
