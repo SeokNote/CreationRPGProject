@@ -18,7 +18,9 @@ class CREATIONRPGPROJECT_API UHealthBarWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	void SetBarValuePercent(float const value);
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UProgressBar* HealthValue;
+
+private:
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess ="true"))
+	UProgressBar* HealthValue = nullptr;
 
 };

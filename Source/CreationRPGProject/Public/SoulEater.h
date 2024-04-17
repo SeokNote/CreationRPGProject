@@ -8,10 +8,11 @@
 #include "GameFramework/Character.h"
 #include "CreationRPGProject/Public/CombatInterface.h"
 #include "Animation/AnimMontage.h"
+#include "CreationRPGProject/MonsterBase.h"
 #include "SoulEater.generated.h"
 
 UCLASS()
-class CREATIONRPGPROJECT_API ASoulEater : public ACharacter, public ICombatInterface
+class CREATIONRPGPROJECT_API ASoulEater : public AMonsterBase, public ICombatInterface
 {
 	GENERATED_BODY()
 

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MonsterBase.generated.h"
 
+//class UWidgetComponent;
 UCLASS()
 class CREATIONRPGPROJECT_API AMonsterBase : public ACharacter
 {
@@ -25,5 +26,16 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	float GetHealth() const;
+	float GetMaxHealth() const;
+	void SetHealth(float const NewHealth);
+
+private:
+	UPROPERTY()
+	class UWidgetComponent* WidgetComponent;
+	float const MaxHealth{ 100.f };
+	float Health;
+
 
 };
