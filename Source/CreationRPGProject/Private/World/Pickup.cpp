@@ -115,6 +115,7 @@ void APickup::TakePickup(const AKwang* Taker)
 
 				UE_LOG(LogTemp, Warning, TEXT("%s"), *AddResult.ResultMessage.ToString());
 			 }
+
 			else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player inventory component is null!"));
@@ -146,4 +147,3 @@ void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent
 		}
 	}
 }
-
