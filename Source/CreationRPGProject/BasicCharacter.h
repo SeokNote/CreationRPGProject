@@ -45,6 +45,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MyState)
 	float MyMaxHealth;
 
+	float GetHealth() { return MyHealth; };
+	void SetHealth(float MH)
+	{ 
+		MyHealth = MH; 
+		UE_LOG(LogTemp, Error, TEXT("zzzzz"));
+	};
+
 	int Gold;
 
 	void AddGold(int gold) { Gold += gold; };

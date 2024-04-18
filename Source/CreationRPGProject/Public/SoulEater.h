@@ -11,6 +11,7 @@
 #include "CreationRPGProject/MonsterBase.h"
 #include "SoulEater.generated.h"
 
+class UBoxComponent;
 UCLASS()
 class CREATIONRPGPROJECT_API ASoulEater : public AMonsterBase, public ICombatInterface
 {
@@ -33,6 +34,15 @@ public:
 	UAnimMontage* GetAttackMontage() const;
 
 	int MeleeAttack_Implementation() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UBoxComponent* MouthCollider;
+
+	void EnableAttackCollider();
+	void DisableAttackCollider();
+
+	UFUNCTION()
+	void OnAttackOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	// Called when the game starts or when spawned
