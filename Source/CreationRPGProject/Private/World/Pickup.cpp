@@ -35,6 +35,7 @@ void APickup::InitializePickup(const TSubclassOf<UItemBase> BaseClass, const int
 		ItemReference->ID = ItemData->ID;
 		ItemReference->ItemType = ItemData->ItemType;
 		ItemReference->ItemQuality = ItemData->ItemQuality;
+		ItemReference->ItemStatistics = ItemData->ItemStatistics;
 		ItemReference->NumericData = ItemData->NumericData;
 		ItemReference->TextData = ItemData->TextData;
 		ItemReference->AssetData = ItemData->AssetData;

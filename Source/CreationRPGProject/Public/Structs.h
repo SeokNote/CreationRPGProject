@@ -45,6 +45,9 @@ struct FItemStatistics
 
 	UPROPERTY(EditAnywhere)
 	int Buyvalue;
+
+	UPROPERTY(EditAnywhere)
+	float HillValue;
 };
 
 USTRUCT()

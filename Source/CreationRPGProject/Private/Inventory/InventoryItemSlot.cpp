@@ -69,7 +69,7 @@ FReply UInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeomerty, 
         if (ItemReference->ItemType == EItemType::Weapon)
         {
             AKwang* PlayerCharacter = Cast<AKwang>(GetOwningPlayerPawn());
-
+            
             if (PlayerCharacter)
             {
                 // 저장된 무기를 가져오고 새로운 무기로 교체합니다.

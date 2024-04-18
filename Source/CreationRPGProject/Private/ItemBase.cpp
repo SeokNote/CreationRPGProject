@@ -57,7 +57,8 @@ void UItemBase::Use(UItemBase* ItemIn,AKwang* Character)
 {
 	if (ItemIn->ID == FName(TEXT("test_001"))) // 포션(ID = 임시)
 	{
-		Character->RestoreHP(50);
+		float HPValue = ItemIn->ItemStatistics.HillValue;
+		Character->RestoreHP(HPValue);
 		Character->AddGold(100);
 		OwningInventory->RemoveAmountOfItem(ItemIn, 1);
 
